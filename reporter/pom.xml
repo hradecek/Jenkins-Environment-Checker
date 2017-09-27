@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.hradecek.jenkins</groupId>
+        <artifactId>jenkins-env-checker-parent</artifactId>
+        <version>0.0.0-SNAPSHOT</version>
+    </parent>
+
+    <!-- Project artifact information -->
+    <artifactId>jenkins-env-checker-reporter</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Jenkins Environment Checker - Reporter</name>
+
+    <properties>
+        <!-- JSON libs -->
+        <!-- Note: Vert.x uses Jackson internally for JSON manipulations, therefore there might be
+           - discrepancies between versions, be aware of this when using together. -->
+        <version.jackson.databind>2.9.0</version.jackson.databind>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- JSON libs -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson.databind}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Template Engine - FreeMarker -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+
+        <!-- JSON libs -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+    </dependencies>
+</project>

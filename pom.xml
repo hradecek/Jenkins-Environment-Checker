@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project artifact information -->
+    <groupId>com.hradecek.jenkins</groupId>
+    <artifactId>jenkins-env-checker-parent</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <!-- Project information -->
+    <name>Jenkins Environment Checker</name>
+    <description>Perform customizable checkings on Jenkins slaves</description>
+    <developers>
+        <developer>
+            <id>hradecek</id>
+            <name>Ivo Hradek</name>
+            <email>ivohradek@gmail.com</email>
+        </developer>
+    </developers>
+    <modules>
+        <module>core</module>
+        <module>reporter</module>
+  </modules>
+
+    <!-- Constant properties -->
+    <properties>
+        <!-- Project settings -->
+        <exec.mainClass>com.hradecek.jenkins.Bootstrap</exec.mainClass>
+        <java.source.version>1.8</java.source.version>
+        <java.target.version>${java.source.version}</java.target.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Vert.x settings -->
+        <version.vertx>3.4.1</version.vertx>
+
+        <!-- RxJava -->
+        <version.rxjava.string>1.1.1</version.rxjava.string>
+        <version.io.reactivex.rxjava2>2.1.3</version.io.reactivex.rxjava2>
+
+        <!-- Apache commons -->
+        <version.commons.io>2.5</version.commons.io>
+        <version.commons.lang3>3.5</version.commons.lang3>
+
+        <!-- Apache SSHD -->
+        <version.sshd.core>1.4.0</version.sshd.core>
+
+        <!-- Functional JAVA -->
+        <version.functionaljava>4.7</version.functionaljava>
+
+        <!-- FreeMarker -->
+        <version.freemarker>2.3.23</version.freemarker>
+
+        <!-- JUnit -->
+        <version.junit>4.12</version.junit>
+
+        <!-- Maven plugins -->
+        <version.exec.maven.plugin>1.4.0</version.exec.maven.plugin>
+        <version.maven.shade.plugin>2.3</version.maven.shade.plugin>
+        <version.maven.source.plugin>3.0.1</version.maven.source.plugin>
+        <version.maven.javadoc.plugin>2.10.4</version.maven.javadoc.plugin>
+        <version.maven.compiler.plugin>3.6.1</version.maven.compiler.plugin>
+        <version.maven.checkstyle.plugin>2.17</version.maven.checkstyle.plugin>
+    </properties>
+
+    <!-- Build settings -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.maven.compiler.plugin}</version>
+                    <configuration>
+                        <failOnWarning>true</failOnWarning>
+                        <source>${java.source.version}</source>
+                        <target>${java.target.version}</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${version.maven.shade.plugin}</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <manifestEntries>
+                                            <Main-Class>${exec.mainClass}</Main-Class>
+                                        </manifestEntries>
+                                    </transformer>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                        <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
+                                    </transformer>
+                                </transformers>
+                                <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${version.exec.maven.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>run</id>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <mainClass>com.hradecek.jenkins.Bootstrap</mainClass>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.maven.checkstyle.plugin}</version>
+                    <configuration>
+                        <configLocation>checkstyle.xml</configLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${version.maven.source.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>source-jar</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.maven.javadoc.plugin}</version>
+                    <configuration>
+                        <doctitle>${project.name} ${project.version}</doctitle>
+                        <windowtitle>${project.artifactId} ${project.version}</windowtitle>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Docs settings -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${version.maven.javadoc.plugin}</version>
+                <configuration>
+                    <show>public</show>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Vert.x -->
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-core</artifactId>
+                <version>${version.vertx}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-rx-java</artifactId>
+                <version>${version.vertx}</version>
+            </dependency>
+
+            <!-- RxJava -->
+            <dependency>
+                <groupId>io.reactivex.rxjava2</groupId>
+                <artifactId>rxjava</artifactId>
+                <version>${version.io.reactivex.rxjava2}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.reactivex</groupId>
+                <artifactId>rxjava-string</artifactId>
+                <version>${version.rxjava.string}</version>
+            </dependency>
+
+            <!-- SSH Client -->
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-core</artifactId>
+                <version>${version.sshd.core}</version>
+            </dependency>
+
+            <!-- Apache commons -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${version.commons.io}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons.lang3}</version>
+            </dependency>
+
+            <!-- Template Engine - FreeMarker -->
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${version.freemarker}</version>
+            </dependency>
+
+            <!-- Functional library -->
+            <dependency>
+                <groupId>org.functionaljava</groupId>
+                <artifactId>functionaljava</artifactId>
+                <version>${version.functionaljava}</version>
+            </dependency>
+
+            <!-- Testing dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-unit</artifactId>
+                <version>${version.vertx}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
